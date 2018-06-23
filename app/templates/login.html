@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field, render_checkbox %}
+<!-- Title -->
+{% block title %}Log In{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="d-flex vertical-center">
+        <div class="my-auto w-100">
+            <div class="col-5 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-warning" role="alert">
+                                            {{ message }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                                {% if errors %}
+                                    {% for error in errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <form action="/login" method="post">
+                            {{ form.csrf_token() }}
+                            {{ render_field(form.username) }} 
+                            {{ render_field(form.password) }}
+                            {{ render_checkbox(form.remember) }}
+                            <input type="submit" value="Log In" class="btn btn-block btn-primary">
+                        </form>
+                    </div>
+                </div>
+                <br>
+                <div class="card card border-info text-center">
+                    <div class="card-body">
+                        <div class="card-text">
+                            New Here? <a href="{{ url_for('main.Register') }}">Create an Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+{% endblock %}

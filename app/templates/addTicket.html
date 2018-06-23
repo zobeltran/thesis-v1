@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field, render_checkbox %}
+
+{% block title %}Add Ticket{% endblock %}
+{% block content %}
+<div class="container">
+    <form action="/ticket/add" method="post">
+        {{ form.csrf_token() }}
+        <div class="form-row">
+            <div class="col">{{ render_field(form.origin) }}</div>
+            <div class="col">{{ render_field(form.arrival) }}</div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                {{ render_field(form.departureDate) }}
+                {{ render_field(form.departureTime) }}
+            </div>
+            <div class="col">
+                {{ render_field(form.arrivalDate) }}               
+                {{ render_field(form.arrivalTime) }} 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                {{ render_field(form.slots) }}
+                {{ render_checkbox(form.isPackaged) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <a href="{{ url_for('main.UserHomeRO') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+            <div class="col-auto">
+                <input type="submit" value="Add Ticket" class="btn btn-primary">
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
