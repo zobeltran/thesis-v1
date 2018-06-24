@@ -1,8 +1,19 @@
 {% extends 'base.html' %}
 
+{% block navbar %}
+    {% include 'partials/navbars/_navbarEmployee.html' %}
+{% endblock %}
+
 {% block content %}
 <h1>{{ current_user.firstName }} {{ current_user.lastName }}</h1>
 <h2>{{ current_user.password }}</h2>
 <h2>{{ current_user.email }}</h2>
-<h2>{{ current_user.role }} {{current_user.id}}</h2>
+<h2>{% if current_user.role == "AD" %} 
+    Admin 
+    {% elif current_user.role == "RO" %} 
+    Reservation Officer 
+    {% else %} 
+    Financial Officer
+    {% endif %}
+    {{current_user.id}}</h2>
 {% endblock %}

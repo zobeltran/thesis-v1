@@ -13,7 +13,7 @@
             {% endif %}
         {% endwith %}
 
-        <form action="/user/register" method="post">
+        <form action="/user/register" method="post" novalidate>
             {{ form.csrf_token() }}
             {{ render_field(form.username) }}
             {{ render_field(form.password) }}

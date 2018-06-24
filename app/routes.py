@@ -4,7 +4,8 @@ from urllib.parse import urlparse, urljoin
 from flask_login import LoginManager, login_user, current_user
 from flask_login import logout_user
 from app import forms
-from app.models import db, User, Ticket
+from app.models import db, User, Ticket, Hotel
+from app.models import LogTrail
 from flask_bcrypt import Bcrypt
 from functools import wraps
 from datetime import timedelta
@@ -32,8 +33,9 @@ def login_required(role="ANY"):
             if not current_user.is_authenticated:
                 return loginManager.unauthorized()
             userRole = current_user.role
-            if(userRole != role and role != "ANY"):
-                return loginManager.unauthorized()
+            if role == "AD":
+                if((userRole != role) and role != "ANY"):
+                    return loginManager.unauthorized()
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
@@ -60,17 +62,29 @@ def LogIn():
             role = user.role
             if checkBcrypt:
                 login_user(user)
+                loggedUser = current_user
+                fullName = loggedUser.firstName + ' ' + loggedUser.lastName
+                if loggedUser.role == "AD":
+                    role = "Admin"
+                elif loggedUser.role == "RO":
+                    role = "Reservation Officer"
+                else:
+                    role = "Financial Officer"
+                event = (fullName + ' (' + role + ') logged in')
+                newLogTrail = LogTrail(event=event)
+                db.session.add(newLogTrail)
+                db.session.commit()
                 if role == "RO":
                     return redirect(url_for('main.UserHomeRO'))
                 elif role == "FO":
-                    return redirect(url_for('main.Login'))
+                    return redirect(url_for('main.LogIn'))
                 else:
-                    return redirect(url_for('main.UserHomeAD'))
+                    return redirect(url_for('main.UserHomeRO'))
             flash('Invalid Credentials', 'error')
-            return render_template('login.html', form=form)
+            return render_template('employee/login.html', form=form)
         flash('Username does not Exist', category='error')
-        return render_template('login.html', form=form)
-    return render_template('login.html', form=form)
+        return render_template('employee/login.html', form=form)
+    return render_template('employee/login.html', form=form)
 
 
 @view.route('/user/register', methods=['GET', 'POST'])
@@ -94,20 +108,25 @@ def Register():
             db.session.add(newUser)
             db.session.commit()
             return redirect(url_for('main.LogIn'))
-    return render_template('register.html', form=form)
+    return render_template('employee/register.html', form=form)
 
 
 @view.route('/logout')
 def LogOut():
+    user = current_user
+    fullName = user.firstName + ' ' + user.lastName
+    if user.role == "AD":
+        role = "Admin"
+    elif user.role == "RO":
+        role = "Reservation Officer"
+    else:
+        role = "Financial Officer"
+    event = (fullName + ' (' + role + ') logged out')
+    newLogTrail = LogTrail(event=event)
+    db.session.add(newLogTrail)
+    db.session.commit()
     logout_user()
     return redirect(url_for('main.LogIn'))
-
-
-# Admin Side
-@view.route('/user/home', methods=['GET', 'POST'])
-@login_required(role="AD")
-def UserHomeAD():
-    return render_template('result.html')
 
 
 # Reservation Officer Side
@@ -115,9 +134,6 @@ def UserHomeAD():
 @login_required(role="RO")
 def UserHomeRO():
     return render_template('result.html')
-
-
-# Financial Officer Side
 
 
 @login_required(role="RO")
@@ -138,5 +154,30 @@ def CreateTicket():
         db.session.add(newTicket)
         db.session.commit()
         return redirect(url_for('main.UserHomeRO'))
-    return render_template('addTicket.html', form=form)
+    return render_template('employee/flights/addTicket.html', form=form)
+
+
+@login_required(role="RO")
+@view.route('/hotel/add', methods=['GET', 'POST'])
+def CreateHotel():
+    form = forms.RegisterHotel()
+    if form.validate_on_submit():
+        newHotel = Hotel(name=form.name.data,
+                         roomType=form.roomType.data,
+                         capacity=form.capacity.data,
+                         details=form.details.data,
+                         stayDays=form.stayDays.data,
+                         stayNights=form.stayNights.data,
+                         expirationDate=form.expirationDate.data,
+                         isPackaged=form.isPackaged.data)
+        db.session.add(newHotel)
+        db.session.commit()
+        return redirect(url_for('main.UserHomeRO'))
+    return render_template('employee/hotels/addHotel.html', form=form)
+
+
+# Financial Officer
 # Customer Side
+@view.route('/')
+def HomePage():
+    return render_template('customer/homepage.html')

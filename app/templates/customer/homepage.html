@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+
+{% block jumbotron %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Welcome Customer</h1>
+            <p class="lead">This is the Online Booking Reservation System of First Choice Travel Hub.</p>
+            <hr class="my-4">
+            <p>You may choose your desired booking on the navbar above.</p>
+            <p>Happy Booking!</p>
+        </div>
+    </div>
+{% endblock %}

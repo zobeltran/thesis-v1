@@ -6,6 +6,15 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
+# Log In Trail
+class LogTrail(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    event = db.Column("Event", db.String(250))
+    eventTime = db.Column("EventTime", db.DateTime, default=db.func.now())
+
+    __tablename__ = "LogTrail"
+
+
 # User Models
 class User(db.Model, UserMixin):
     id = db.Column('Id', db.Integer, primary_key=True)
@@ -60,12 +69,12 @@ class Hotel(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     name = db.Column("Name", db.String(250))
     roomType = db.Column("Room Type", db.String(250))
-    capacity = db.Column("Capacity", db.String(250))
-    details = db.Column("Details", db.String(250))
+    capacity = db.Column("Capacity", db.String(4))
+    details = db.Column("Details", db.String(300))
     stayDays = db.Column("Days", db.Integer)
     stayNights = db.Column("Nights", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
-    isExpired = db.Column("IsExpired", db.Boolean)
+    isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("isPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())

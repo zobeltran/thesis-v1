@@ -2,6 +2,9 @@
 {% from "formhelper.html" import render_field, render_checkbox %}
 <!-- Title -->
 {% block title %}Log In{% endblock %}
+{% block navbar %}
+    {% include 'partials/navbars/_navbarEmployee.html' %}
+{% endblock %}
 {% block content %}
 <div class="container">
     <div class="d-flex vertical-center">
@@ -29,7 +32,7 @@
                                 {% endif %}
                             {% endwith %}
                         </div>
-                        <form action="/login" method="post">
+                        <form action="/login" method="post" novalidate>
                             {{ form.csrf_token() }}
                             {{ render_field(form.username) }} 
                             {{ render_field(form.password) }}

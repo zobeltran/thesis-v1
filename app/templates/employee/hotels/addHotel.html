@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field, render_checkbox %}
+
+{% block ticket %}Add Hotel{% endblock %}
+{% block content %}
+    <div class="container">
+        <form action="{{ url_for('main.CreateHotel') }}" method="post" novalidate>
+            {{ form.csrf_token() }}
+            {{ render_field(form.name) }}
+            {{ render_field(form.roomType) }}
+            {{ render_field(form.details) }}
+            <div class="row">
+                <div class="col">{{ render_field(form.capacity) }}</div>
+                <div class="col">{{ render_field(form.stayDays) }}</div>
+                <div class="col">{{ render_field(form.stayNights) }}</div>
+            </div>
+            {{ render_field(form.expirationDate) }}
+            {{ render_checkbox(form.isPackaged) }}
+            <input type="submit" value="Add Hotel" class="btn btn-primary">
+        </form>
+    </div>
+{% endblock %}
