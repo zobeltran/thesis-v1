@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field %}
+
+{% block content %}
+<form action="{{ url_for('main.bookCustomerFlights', counter=counter) }}" method="post">
+    {% for forms in form.customer  %}
+        {{ forms.csrf_token }}
+        {{ render_field(forms.firstName) }}
+        {{ render_field(forms.lastName)}}
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}

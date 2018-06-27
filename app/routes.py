@@ -4,7 +4,7 @@ from urllib.parse import urlparse, urljoin
 from flask_login import LoginManager, login_user, current_user
 from flask_login import logout_user
 from app import forms
-from app.models import db, User, Ticket, Hotel
+from app.models import db, User, Ticket, Hotel, Customer
 from app.models import LogTrail
 from flask_bcrypt import Bcrypt
 from functools import wraps
@@ -181,3 +181,25 @@ def CreateHotel():
 @view.route('/')
 def HomePage():
     return render_template('customer/homepage.html')
+
+
+@view.route('/fight/summary', methods=['GET', 'POST'])
+def FlightSummary():
+    return render_template('customer/flightCounter.html')
+
+
+@view.route('/flight/add/Customer/<int:counter>', methods=['GET', 'POST'])
+@forms.csrf.exempt
+def bookCustomerFlights(counter):
+    form = forms.RegisterCustomerFlights(meta={'csrf': False})
+    if form.validate_on_submit():
+        for data in form.customer:
+            customer = Customer(firstName=data.firstName.data,
+                                lastName=data.lastName.data)
+            db.session.add(customer)
+            db.session.commit()
+        return redirect(url_for('main.FlightSummary'))
+    for count in range(counter):
+        form.customer.append_entry()
+    return render_template('customer/flightCustomerForm.html', form=form,
+                           counter=counter)

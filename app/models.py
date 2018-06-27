@@ -80,3 +80,12 @@ class Hotel(db.Model):
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())
 
     __tablename__ = "Hotels"
+
+
+# Customer Model
+class Customer(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    firstName = db.Column("FirstName", db.String(250))
+    lastName = db.Column("LastName", db.String(250))
+
+    __tableName__ = "CustomerFlights"

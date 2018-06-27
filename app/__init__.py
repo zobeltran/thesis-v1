@@ -2,6 +2,7 @@ from flask import Flask
 from os import getenv
 from app.routes import view, loginManager, bcrypt
 from app.models import db, migrate
+from app.forms import csrf
 
 # Flask Activation
 app = Flask(__name__, static_folder=None)
@@ -31,6 +32,9 @@ bcrypt.init_app(app)
 
 # Register Blueprints
 app.register_blueprint(view)
+
+# CSRF
+csrf.init_app(app)
 
 if __name__ == '__main__':
     app.jinja_env.cache = {}

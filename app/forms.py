@@ -1,10 +1,10 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, PasswordField, BooleanField, SelectField
-from wtforms import IntegerField, TextAreaField
+from wtforms import IntegerField, TextAreaField, FormField, FieldList
 from wtforms.fields.html5 import DateField, TimeField
 from wtforms.validators import InputRequired, Length, EqualTo, Email
 
-
+csrf = CSRFProtect()
 # Validation Messages
 # Register User Validations
 usernameLength = ('Username has a minimum of 4 and a maximum '
@@ -94,3 +94,16 @@ class RegisterHotel(FlaskForm):
     expirationDate = DateField('Expiration Date',
                                [InputRequired('Expiration Date is Required')])
     isPackaged = BooleanField('Packaged')
+
+
+class RegisterCustomerFlightsFields(FlaskForm):
+    firstName = StringField('First Name',
+                            [InputRequired('First Name is Required'),
+                             Length(max=100, message=firstNameLength)])
+    lastName = StringField('Last Name',
+                           [InputRequired('Last Name is Required'),
+                            Length(max=100, message=lastNameLength)])
+
+
+class RegisterCustomerFlights(FlaskForm):
+    customer = FieldList(FormField(RegisterCustomerFlightsFields))
