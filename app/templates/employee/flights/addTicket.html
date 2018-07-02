@@ -22,7 +22,14 @@
         </div>
         <div class="row">
             <div class="col-3">
+                {{ render_field(form.price) }}
+            </div>
+            <div class="col-3">
                 {{ render_field(form.slots) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
                 {{ render_checkbox(form.isPackaged) }}
             </div>
         </div>

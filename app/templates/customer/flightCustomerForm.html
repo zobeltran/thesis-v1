@@ -5,8 +5,22 @@
 <form action="{{ url_for('main.bookCustomerFlights', counter=counter) }}" method="post">
     {% for forms in form.customer  %}
         {{ forms.csrf_token }}
+        <div class="row">
+            <div class="col">
         {{ render_field(forms.firstName) }}
-        {{ render_field(forms.lastName)}}
+        </div>
+            <div class="col">
+            {{ render_field(forms.lastName)}}
+            </div>
+    </div>
+        <div class="row">
+            <div class="col">
+            {{ render_field(forms.email)}}
+            </div>
+            <div class="col">
+            {{ render_field(forms.contactNo)}}
+        </div>
+    </div>
     {% endfor %}
     <input type="submit" value="Submit">
 </form>

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}View Flights{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    {% for items in viewFlights|batch(3) %}
+        <div class="card-deck">
+            {% for flight in items %}
+            <div class="card">
+                <h5 class="card-header">{{ flight.origin }} - {{ flight.arrival }}</h5>
+                <div class="card-body">
+                    <p class="card-text">Departure Date: {{ flight.departureDate.strftime('%B %d, %Y') }} -  {{ flight.departureTime }}</p>
+                    <p class="card-text">Return Date: {{ flight.returnDate.strftime('%B %d, %Y') }} -{{ flight.returnTime }} </p>
+                    <p class="card-text">Price: Php {{ flight.price }} </p> 
+                    <p class="card-text">Remaining Slots: {{ flight.remainingSlots }} </p> 
+                    <a href="{{url_for('main.FlightSummary', id=flight.id)}}" class="btn btn-primary">View Flight</a>
+                </div>
+                <div class="card-footer">
+                    <p class="card-text text-muted text-right">Valid Until: {{ flight.expirationDate.strftime('%B %d, %Y') }}</p>   
+                </div>
+            </div>
+            {% endfor %} 
+        </div>
+        <br>
+    {% endfor %}
+</div>
+    
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field %}
+{% block title %} Flight Inquiry {% endblock %}
+{% block content %}
+    <div class="container">
+        <form action="{{ url_for('main.InquireFlights') }}" method="post" novalidate>
+            {{ form.csrf_token }}
+            <div class="row">
+                <div class="col">
+                    {{ render_field(form.firstName) }}
+                </div>
+                <div class="col">
+                    {{ render_field(form.lastName) }}
+                </div>
+                <div class="col">
+                    {{ render_field(form.email) }}
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col">
+                            {{ render_field(form.origin) }}
+                        </div>
+                        <div class="col">
+                                {{ render_field(form.arrival) }}
+                            </div>        
+            </div>
+            <div class="row">
+                <div class="col">
+                        {{ render_field(form.departureDate) }}
+                </div>
+                <div class="col">
+                        {{ render_field(form.arrivalDate) }}
+                </div>
+                <div class="col">
+                        {{ render_field(form.time) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                        {{ render_field(form.adult) }} 
+                </div>
+                <div class="col">
+                        {{ render_field(form.child) }}
+                </div>
+                <div class="col">
+                        {{ render_field(form.infant) }}
+                </div>
+            </div>
+            {{ render_field(form.note) }}
+            <div class="col-auto">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+    
+{% endblock %}

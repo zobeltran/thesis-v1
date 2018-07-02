@@ -6,13 +6,18 @@
     <div class="container">
         <form action="{{ url_for('main.CreateHotel') }}" method="post" novalidate>
             {{ form.csrf_token() }}
-            {{ render_field(form.name) }}
-            {{ render_field(form.roomType) }}
-            {{ render_field(form.details) }}
-            <div class="row">
+                <div class="row">
+                <div class="col">{{ render_field(form.name) }}</div>
+                <div class="col">{{ render_field(form.roomType) }}</div>
                 <div class="col">{{ render_field(form.capacity) }}</div>
-                <div class="col">{{ render_field(form.stayDays) }}</div>
-                <div class="col">{{ render_field(form.stayNights) }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ render_field(form.details) }}</div>
+            </div>
+            <div class="row">
+                <div class="col">{{ render_field(form.checkIn) }}</div>
+                <div class="col">{{ render_field(form.checkOut) }}</div>
+                <div class="col">{{ render_field(form.price) }}</div>
             </div>
             {{ render_field(form.expirationDate) }}
             {{ render_checkbox(form.isPackaged) }}
