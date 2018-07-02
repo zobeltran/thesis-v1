@@ -54,7 +54,7 @@ def LogIn():
     session['next'] = request.args.get('next')
     form = forms.LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter(User.username == form.username.data).first()
         if user:
             inputPassword = form.password.data
             dbPassword = user.password
@@ -92,8 +92,9 @@ def Register():
     form = forms.RegisterForm()
     if form.validate_on_submit():
         passwordBcrypt = bcrypt.generate_password_hash(form.password.data)
-        emailUnique = User.query.filter_by(email=form.email.data)
-        usernameUnique = User.query.filter_by(username=form.username.data)
+        emailUnique = User.query.filter(User.email == form.email.data).all()
+        usernameUnique = (User.query
+                          .filter(User.username == form.username.data).all())
         if usernameUnique:
             flash('Username already Existing', 'error')
         elif emailUnique:
