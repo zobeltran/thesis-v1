@@ -56,6 +56,7 @@ class Ticket(db.Model):
     returnTime = db.Column("ReturnTime", db.Time)
     remainingSlots = db.Column("RemainingSlots", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
+    price = db.Column("Price", db.Integer)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("IsPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
@@ -71,8 +72,9 @@ class Hotel(db.Model):
     roomType = db.Column("Room Type", db.String(250))
     capacity = db.Column("Capacity", db.String(4))
     details = db.Column("Details", db.String(300))
-    stayDays = db.Column("Days", db.Integer)
-    stayNights = db.Column("Nights", db.Integer)
+    checkIn = db.Column("CheckIn", db.DateTime)
+    checkOut = db.Column("CheckOut", db.DateTime)
+    price = db.Column("Price", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("isPackaged", db.Boolean, default=False)
@@ -87,5 +89,40 @@ class Customer(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     firstName = db.Column("FirstName", db.String(250))
     lastName = db.Column("LastName", db.String(250))
+    email = db.Column("Email", db.String(100))
+    contactNo = db.Column("ContactNumber", db.Integer)
 
     __tableName__ = "CustomerFlights"
+
+
+class FlightInquiry(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    firstName = db.Column("FirstName", db.String(100))
+    lastName = db.Column("lastName", db.String(100))
+    email = db.Column("Email", db.String(100))
+    origin = db.Column("Origin", db.String(100))
+    arrival = db.Column("Arrival", db.String(100))
+    departureDate = db.Column("DepartureDate", db.Date)
+    arrivalDate = db.Column("ArrivalDate", db.Date)
+    time = db.Column("DesiredTime", db.String(100))
+    adult = db.Column("NumberOfAdults", db.Integer)
+    child = db.Column("NumberOfChild", db.Integer)
+    infant = db.Column("NumberOfInfant", db.Integer)
+    note = db.Column("Note", db.String(300))
+
+    __tablename__ = "FlightInquiry"
+
+
+class HotelInquiry(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    firstName = db.Column("FirstName", db.String(100))
+    lastName = db.Column("lastName", db.String(100))
+    email = db.Column("Email", db.String(100))
+    location = db.Column("Location", db.String(100))
+    budget = db.Column("Budget", db.Integer)
+    guest = db.Column("Guest", db.Integer)
+    checkIn = db.Column("checkInDate", db.Date)
+    checkOut = db.Column("checkOutDate", db.Date)
+    note = db.Column("Note", db.String(300))
+
+    __tablename__ = "HotelInquiry"
