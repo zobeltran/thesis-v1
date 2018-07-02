@@ -5,10 +5,10 @@ from flask_login import LoginManager, login_user, current_user
 from flask_login import logout_user
 from app import forms
 from app.models import db, User, Ticket, Hotel, Customer
-from app.models import LogTrail
+from app.models import LogTrail, FlightInquiry, HotelInquiry
 from flask_bcrypt import Bcrypt
 from functools import wraps
-from datetime import timedelta
+from datetime import timedelta, date
 
 view = Blueprint('main', __name__, template_folder='templates',
                  static_folder='static', static_url_path='/%s' % __name__)
@@ -150,7 +150,8 @@ def CreateTicket():
                            returnTime=form.arrivalTime.data,
                            expirationDate=expireDate,
                            remainingSlots=form.slots.data,
-                           isPackaged=form.isPackaged.data)
+                           isPackaged=form.isPackaged.data,
+                           price=form.price.data)
         db.session.add(newTicket)
         db.session.commit()
         return redirect(url_for('main.UserHomeRO'))
@@ -166,10 +167,11 @@ def CreateHotel():
                          roomType=form.roomType.data,
                          capacity=form.capacity.data,
                          details=form.details.data,
-                         stayDays=form.stayDays.data,
-                         stayNights=form.stayNights.data,
+                         checkIn=form.checkIn.data,
+                         checkOut=form.checkOut.data,
                          expirationDate=form.expirationDate.data,
-                         isPackaged=form.isPackaged.data)
+                         isPackaged=form.isPackaged.data,
+                         price=form.price.data)
         db.session.add(newHotel)
         db.session.commit()
         return redirect(url_for('main.UserHomeRO'))
@@ -183,14 +185,16 @@ def HomePage():
     return render_template('customer/homepage.html')
 
 
-@view.route('/fight/summary', methods=['GET', 'POST'])
-def FlightSummary():
-    return render_template('customer/flightCounter.html')
+@view.route('/flight/summary/id/<int:id>', methods=['GET', 'POST'])
+def FlightSummary(id):
+    flightSummary = Ticket.query.get(id)
+    return render_template('customer/flightCounter.html',
+                           flightSummary=flightSummary)
 
 
 @view.route('/flight/add/Customer/<int:counter>', methods=['GET', 'POST'])
 @forms.csrf.exempt
-def bookCustomerFlights(counter):
+def BookCustomerFlights(counter):
     form = forms.RegisterCustomerFlights(meta={'csrf': False})
     if form.validate_on_submit():
         for data in form.customer:
@@ -200,6 +204,77 @@ def bookCustomerFlights(counter):
             db.session.commit()
         return redirect(url_for('main.FlightSummary'))
     for count in range(counter):
+        form.customer.pop_entry()
         form.customer.append_entry()
     return render_template('customer/flightCustomerForm.html', form=form,
                            counter=counter)
+
+
+@view.route('/inquiry')
+def Inquire():
+    return render_template('customer/inquiry.html')
+
+
+@view.route('/inquiry/flights', methods=['GET', 'POST'])
+def InquireFlights():
+    form = forms.InquiryFlights()
+    if form.validate_on_submit():
+        data = FlightInquiry(firstName=form.firstName.data,
+                             lastName=form.lastName.data,
+                             email=form.email.data,
+                             origin=form.origin.data,
+                             arrival=form.arrival.data,
+                             departureDate=form.departureDate.data,
+                             arrivalDate=form.arrivalDate.data,
+                             time=form.time.data,
+                             adult=form.adult.data,
+                             child=form.child.data,
+                             infant=form.child.data,
+                             note=form.note.data)
+        db.session.add(data)
+        db.session.commit()
+        return redirect(url_for('main.Inquire'))
+    return render_template('customer/inquiryFlight.html', form=form)
+
+
+@view.route('/inquiry/hotels', methods=['GET', 'POST'])
+def InquireHotels():
+    form = forms.InquiryHotels()
+    if form.validate_on_submit():
+        if form.checkOut.data < form.checkIn.data:
+            errorMessage = ('%s must be greater than %s'
+                            % (form.checkOut.label.text,
+                               form.checkIn.label.text))
+            form.checkOut.errors.append(errorMessage)
+            return render_template('customer/inquiryHotel.html', form=form)
+        data = HotelInquiry(firstName=form.firstName.data,
+                            lastName=form.lastName.data,
+                            email=form.email.data,
+                            location=form.location.data,
+                            budget=form.budget.data,
+                            guest=form.guest.data,
+                            checkIn=form.checkIn.data,
+                            checkOut=form.checkOut.data,
+                            note=form.note.data)
+        db.session.add(data)
+        db.session.commit()
+        return redirect(url_for('main.Inquire'))
+    return render_template('customer/inquiryHotel.html', form=form)
+
+
+@view.route('/view/flights', methods=['GET', 'POST'])
+def ViewFlights():
+    now = date.today()
+    viewFlights = Ticket.query.filter(Ticket.isExpired.is_(False)).all()
+    (Ticket.query.filter(Ticket.expirationDate <= now)
+     .update({Ticket.isExpired: True}))
+    db.session.commit()
+    return render_template('customer/viewFlights.html',
+                           viewFlights=viewFlights)
+
+
+@view.route('/view/hotels', methods=['GET', 'POST'])
+def ViewHotels():
+    viewHotels = Hotel.query.all()
+    db.session.commit()
+    return render_template('customer/viewHotels.html', viewHotels=viewHotels)
