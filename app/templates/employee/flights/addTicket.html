@@ -2,11 +2,15 @@
 {% from "formhelper.html" import render_field, render_checkbox %}
 
 {% block title %}Add Ticket{% endblock %}
+{% block navbar %}
+    {% include 'partials/navbars/_navbarEmployee.html' %}
+{% endblock %}
 {% block content %}
 <div class="container">
     <form action="{{ url_for('main.CreateTicket') }}" method="post" novalidate>
         {{ form.csrf_token() }}
         <div class="form-row">
+            <div class="col">{{ render_field(form.flightNo) }}</div>
             <div class="col">{{ render_field(form.origin) }}</div>
             <div class="col">{{ render_field(form.arrival) }}</div>
         </div>
@@ -19,10 +23,18 @@
                 {{ render_field(form.arrivalDate) }}               
                 {{ render_field(form.arrivalTime) }} 
             </div>
+            <div class="col">
+                {{ render_field(form.returnDate) }}               
+                {{ render_field(form.returnTime) }} 
+            </div>
         </div>
         <div class="row">
             <div class="col-3">
-                {{ render_field(form.price) }}
+                {% if form.isPackaged.data %}
+                    <fieldset disabled id='disable'>{{ render_field(form.price) }}</fieldset>
+                {% else %}
+                    {{ render_field(form.price) }}
+                {% endif %}
             </div>
             <div class="col-3">
                 {{ render_field(form.slots) }}
@@ -43,4 +55,19 @@
         </div>
     </form>
 </div>
+{% endblock %}
+{% block javascript %}
+<script>
+$(document).ready(function(){
+  $('input:checkbox').on('click', function(){
+      if($('input:checkbox').is(':checked')){
+        $('#disable').prop('disabled', 'disabled');
+        $('#price').val('');
+      }
+      else{
+        $('#fieldset').prop('disabled', false);
+      }
+  });
+});
+</script>
 {% endblock %}

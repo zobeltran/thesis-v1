@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}View Packages{% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    {% for items in viewPackages|batch(3) %}
+        <div class="card-deck">
+            {% for flight in items %}
+            <div class="card">
+                <h5 class="card-header">Destination: {{ package.destination }}</h5>
+                <div class="card-body">
+                    <p class="card-text">Days of Stay: {{package,days}} </p>
+                    <p class="card-text">Price: Php {{ package.price }} </p> 
+                    <p class="card-text">Interary: {{package.interary}} </p>
+                    <p class="card-text">Interary: {{package.interary}} </p>
+                    <p class="card-text">Inclusions: {{ package.inclusions }} </p>
+                    <p class="card-text">Flight details: {{package.flight}} </p>
+                    <p class="card-text">Hotel details: {{package.hotel}} </p> 
+                    <a href="{{url_for('main.PackageSummary', id=flight.id)}}" class="btn btn-primary">View Package</a>
+                </div>
+                <div class="card-footer">
+                    <p class="card-text text-muted text-right">Valid Until: {{ package.expirationDate.strftime('%B %d, %Y') }}</p>   
+                </div>
+            </div>
+            {% endfor %} 
+        </div>
+        <br>
+    {% endfor %}
+</div>
+    
+{% endblock %}

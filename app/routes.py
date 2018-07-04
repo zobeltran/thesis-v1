@@ -6,6 +6,7 @@ from flask_login import logout_user
 from app import forms
 from app.models import db, User, Ticket, Hotel, Customer
 from app.models import LogTrail, FlightInquiry, HotelInquiry
+from app.models import Package
 from flask_bcrypt import Bcrypt
 from functools import wraps
 from datetime import timedelta, date
@@ -107,6 +108,17 @@ def Register():
                            email=form.email.data,
                            role=form.role.data)
             db.session.add(newUser)
+            if form.role.data == "AD":
+                role = "Admin"
+            elif form.role.data == "RO":
+                role = "Reservation Officer"
+            else:
+                role = "Financial Officer"
+            event = (form.username.data +
+                     ' registered as ' +
+                     role)
+            newLogTrail = LogTrail(event=event)
+            db.session.add(newLogTrail)
             db.session.commit()
             return redirect(url_for('main.LogIn'))
     return render_template('employee/register.html', form=form)
@@ -137,30 +149,51 @@ def UserHomeRO():
     return render_template('result.html')
 
 
-@login_required(role="RO")
 @view.route('/ticket/add', methods=['GET', 'POST'])
+@login_required(role="RO")
 def CreateTicket():
     form = forms.RegisterTicket()
     if form.validate_on_submit():
         expireDate = form.departureDate.data - timedelta(days=7)
         newTicket = Ticket(origin=form.origin.data,
                            arrival=form.arrival.data,
+                           flightNo=form.flightNo.data,
                            departureDate=form.departureDate.data,
                            departureTime=form.departureTime.data,
-                           returnDate=form.arrivalDate.data,
-                           returnTime=form.arrivalTime.data,
+                           arrivalDate=form.arrivalDate.data,
+                           arrivalTime=form.arrivalTime.data,
+                           returnDate=form.returnDate.data,
+                           returnTime=form.returnTime.data,
                            expirationDate=expireDate,
                            remainingSlots=form.slots.data,
                            isPackaged=form.isPackaged.data,
                            price=form.price.data)
         db.session.add(newTicket)
+        user = current_user
+        fullName = user.firstName + ' ' + user.lastName
+        if user.role == "AD":
+            role = "Admin"
+        elif user.role == "RO":
+            role = "Reservation Officer"
+        else:
+            role = "Financial Officer"
+        event = (fullName +
+                 ' (' + role + ') created ' +
+                 form.flightNo.data +
+                 ' (' +
+                 form.origin.data +
+                 '-' +
+                 form.arrival.data +
+                 ')')
+        newLogTrail = LogTrail(event=event)
+        db.session.add(newLogTrail)
         db.session.commit()
         return redirect(url_for('main.UserHomeRO'))
     return render_template('employee/flights/addTicket.html', form=form)
 
 
-@login_required(role="RO")
 @view.route('/hotel/add', methods=['GET', 'POST'])
+@login_required(role="RO")
 def CreateHotel():
     form = forms.RegisterHotel()
     if form.validate_on_submit():
@@ -170,13 +203,82 @@ def CreateHotel():
                          details=form.details.data,
                          checkIn=form.checkIn.data,
                          checkOut=form.checkOut.data,
+                         remainingRooms=form.rooms.data,
                          expirationDate=form.expirationDate.data,
                          isPackaged=form.isPackaged.data,
                          price=form.price.data)
         db.session.add(newHotel)
+        user = current_user
+        fullName = user.firstName + ' ' + user.lastName
+        if user.role == "AD":
+            role = "Admin"
+        elif user.role == "RO":
+            role = "Reservation Officer"
+        else:
+            role = "Financial Officer"
+        event = (fullName +
+                 ' (' + role + ') created ' +
+                 form.name.data +
+                 ' (' +
+                 form.roomType.data +
+                 ')')
+        newLogTrail = LogTrail(event=event)
+        db.session.add(newLogTrail)
         db.session.commit()
         return redirect(url_for('main.UserHomeRO'))
     return render_template('employee/hotels/addHotel.html', form=form)
+
+
+@view.route('/package/add', methods=['GET', 'POST'])
+@login_required(role="RO")
+def CreatePackage():
+    form = forms.RegisterPackage()
+    availableHotel = Hotel.query.filter(Hotel.isExpired.is_(False)).all()
+    hotelList = [(h.id, (h.name + ' - ' + h.roomType)) for h in availableHotel]
+    form.hotels.choices = hotelList
+    availableTicket = Ticket.query.filter(Ticket.isExpired.is_(False)).all()
+    ticketList = [(t.id, (t.flightNo + (' (' +
+                                        t.origin +
+                                        ' - ' +
+                                        t.arrival +
+                                        ')')))
+                  for t in availableTicket]
+    form.tickets.choices = ticketList
+    if form.validate_on_submit():
+        newPackage = Package(destination=form.destination.data,
+                             days=form.days.data,
+                             expirationDate=form.expirationDate.data,
+                             remainingSlots=form.remainingSlots.data,
+                             intenerary=form.intenerary.data,
+                             inclusions=form.inclusions.data,
+                             price=form.price.data,
+                             hotel=form.hotels.data,
+                             flight=form.tickets.data)
+        db.session.add(newPackage)
+        user = current_user
+        fullName = user.firstName + ' ' + user.lastName
+        if user.role == "AD":
+            role = "Admin"
+        elif user.role == "RO":
+            role = "Reservation Officer"
+        else:
+            role = "Financial Officer"
+        event = (fullName +
+                 ' (' + role + ') created ' +
+                 form.destination.data)
+        newLogTrail = LogTrail(event=event)
+        db.session.add(newLogTrail)
+        db.session.commit()
+        return redirect(url_for('main.UserHomeRO'))
+    return render_template('employee/packages/addPackage.html', form=form)
+
+
+# Admin
+@view.route('/logs')
+@login_required('AD')
+def LogTrails():
+    logs = LogTrail.query.order_by(LogTrail.id.desc()).all()
+    return render_template('employee/logs.html', logs=logs)
 
 
 # Financial Officer
@@ -189,8 +291,35 @@ def HomePage():
 @view.route('/flight/summary/id/<int:id>', methods=['GET', 'POST'])
 def FlightSummary(id):
     flightSummary = Ticket.query.get(id)
+    form = forms.CustomerCount()
+    if form.validate_on_submit():
+        if form.customerCounter.data > flightSummary.remainingSlots:
+            errorMessage = ('%s must be less than Remaining Slots'
+                            % (form.customerCounter.label.text))
+            form.customerCounter.errors.append(errorMessage)
+            return render_template('customer/flightCounter.html',
+                                   form=form, flightSummary=flightSummary)
+        return redirect(url_for('main.BookCustomerFlights',
+                        counter=form.customerCounter.data))
     return render_template('customer/flightCounter.html',
-                           flightSummary=flightSummary)
+                           flightSummary=flightSummary, form=form)
+
+
+@view.route('/hotel/summary/id/<int:id>', methods=['GET', 'POST'])
+def HotelSummary(id):
+    hotelSummary = Hotel.query.get(id)
+    form = forms.CustomerCount()
+    if form.validate_on_submit():
+        if form.customerCounter.data > hotelSummary.remainingSlots:
+            errorMessage = ('%s must be less than Remaining Slots'
+                            % (form.customerCounter.label.text))
+            form.customerCounter.errors.append(errorMessage)
+            return render_template('customer/flightCounter.html',
+                                   form=form, hotelSummary=hotelSummary)
+        return url_for('main.BookCustomerFlights',
+                       counter=form.customerCounter.data)
+    return render_template('customer/flightCounter.html',
+                           hotelSummary=hotelSummary, form=form)
 
 
 @view.route('/flight/add/Customer/<int:counter>', methods=['GET', 'POST'])
@@ -205,9 +334,10 @@ def BookCustomerFlights(counter):
             db.session.commit()
         return redirect(url_for('main.FlightSummary'))
     for count in range(counter):
-        form.customer.pop_entry()
+        # form.customer.pop_entry()
         form.customer.append_entry()
-    return render_template('customer/flightCustomerForm.html', form=form,
+    return render_template('customer/flightCustomerForm.html',
+                           form=form,
                            counter=counter)
 
 
@@ -266,16 +396,36 @@ def InquireHotels():
 @view.route('/view/flights', methods=['GET', 'POST'])
 def ViewFlights():
     now = date.today()
-    viewFlights = Ticket.query.filter(Ticket.isExpired.is_(False)).all()
     (Ticket.query.filter(Ticket.expirationDate <= now)
      .update({Ticket.isExpired: True}))
     db.session.commit()
+    viewFlights = Ticket.query.filter(Ticket.isExpired.is_(False)).all()
     return render_template('customer/viewFlights.html',
                            viewFlights=viewFlights)
 
 
-@view.route('/view/hotels', methods=['GET', 'POST'])
+@view.route('/view/hotels/', methods=['GET', 'POST'])
 def ViewHotels():
-    viewHotels = Hotel.query.all()
-    db.session.commit()
+    now = date.today()
+    (Hotel.query.filter(Hotel.expirationDate <= now)
+     .update({Hotel.isExpired: True}))
+    viewHotels = Hotel.query.filter(Hotel.isExpired.is_(False)).all()
     return render_template('customer/viewHotels.html', viewHotels=viewHotels)
+
+
+@view.route('/view/packages', methods=['GET', 'POST'])
+def ViewPackages():
+    now = date.today()
+    (Package.query.filter(Package.expirationDate <= now)
+     .update({Package.isExpired: True}))
+    viewPackages = Package.query.filter(Package.isExpired.is_(False)).all()
+    return render_template('customer/viewPackages.html',
+                           viewPackages=viewPackages)
+
+
+@view.route('/payment/flights/<int:counter>/<int:id>/<string:ref>',
+            methods=['GET', 'POST'])
+def PayFlights(counter, id, ref):
+    flight = Ticket.query.get(id)
+    return render_template('customer/paymentFlights.html',
+                           flight=flight)

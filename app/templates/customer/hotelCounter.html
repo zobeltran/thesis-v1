@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% from 'formhelper.html' import render_field %}
+
+{% block title %} Hotel Review {% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+{% block jumbotron %}
+    <div class="jumbotron">
+        <div class="container">
+            <h4 class="display-4">Hotel {{ hotelSummary.name }} ({{ hotelSummary.roomType }})</h4>
+            <p class="lead"></p>
+            <div class="row">
+                <div class="col">
+                    <p class="lead">Details</p>
+                    <p class="lead">{{ hotelSummary.details }}</p>
+                </div>
+                <div class="col">
+                    <p class="lead">Remaining Rooms</p>
+                    <p class="lead">{{ hotelSummary.remainingRooms }}</p>
+                </div>
+            </div>
+            
+            
+            <p class="lead"></p>
+            <p class="lead"></p>
+            <p class="lead"></p>
+            <form action="{{ url_for('main.HotelSummary', id=hotelSummary.id) }}" method="post" novalidate class="col-5 no-gutters">
+                {{ form.csrf_token }}
+                    {{ render_field(form.customerCounter) }}
+                <input type="submit" value="Avail Hotel" class="btn btn-primary">                    
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -12,11 +12,15 @@ secretKey = getenv('SECRET_KEY')
 dbUri = getenv('SQLALCHEMY_DATABASE_URI')
 sqlTrackModifcation = getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
 useSessionNext = getenv('USE_SESSION_FOR_NEXT')
+recaptchaPub = getenv('RECAPTCHA_PUBLIC_KEY')
+recaptchaPri = getenv('RECAPTCHA_PRIVATE_KEY')
 # Config Activation
 app.config['SECRET_KEY'] = secretKey
 app.config['SQLALCHEMY_DATABASE_URI'] = dbUri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = sqlTrackModifcation
 app.config['USE_SESSION_FOR_NEXT'] = useSessionNext
+app.config['RECAPTCHA_PUBLIC_KEY'] = recaptchaPub
+app.config['RECAPTCHA_PRIVATE_KEY'] = recaptchaPri
 
 # Sql Alchemy Activation
 db.init_app(app)

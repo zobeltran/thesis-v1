@@ -48,21 +48,29 @@ class User(db.Model, UserMixin):
 # Tickets Model
 class Ticket(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
+    flightNo = db.Column("FlightNo", db.String(100))
     origin = db.Column("Origin", db.String(100))
     arrival = db.Column("Arrival", db.String(100))
     departureDate = db.Column("DepartureDate", db.Date)
     departureTime = db.Column("DepartureTime", db.Time)
+    arrivalDate = db.Column("ArrivalDate", db.Date)
+    arrivalTime = db.Column("ArrivalTime", db.Time)
     returnDate = db.Column("ReturnDate", db.Date)
     returnTime = db.Column("ReturnTime", db.Time)
     remainingSlots = db.Column("RemainingSlots", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
-    price = db.Column("Price", db.Integer)
+    price = db.Column('Price', db.Numeric)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("IsPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())
 
     __tablename__ = "Tickets"
+
+    def __repr__(self):
+        return '%r : (%r - %r)' % (self.flightNo,
+                                   self.origin,
+                                   self.arrival)
 
 
 # Hotel Model
@@ -74,14 +82,21 @@ class Hotel(db.Model):
     details = db.Column("Details", db.String(300))
     checkIn = db.Column("CheckIn", db.DateTime)
     checkOut = db.Column("CheckOut", db.DateTime)
-    price = db.Column("Price", db.Integer)
+    price = db.Column('Price', db.Numeric)
     expirationDate = db.Column("ExpirationDate", db.Date)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("isPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())
+    remainingRooms = db.Column('RemainingRooms', db.Integer)
 
     __tablename__ = "Hotels"
+
+    def __repr__(self):
+        return '%s' % (self.id)
+
+    def __str__(self):
+        return '{} {}'.format(self.name, self.roomType)
 
 
 # Customer Model
@@ -92,7 +107,7 @@ class Customer(db.Model):
     email = db.Column("Email", db.String(100))
     contactNo = db.Column("ContactNumber", db.Integer)
 
-    __tableName__ = "CustomerFlights"
+    __tablename__ = "Customers"
 
 
 class FlightInquiry(db.Model):
@@ -126,3 +141,60 @@ class HotelInquiry(db.Model):
     note = db.Column("Note", db.String(300))
 
     __tablename__ = "HotelInquiry"
+
+
+class Package(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    destination = db.Column("Destination", db.String(50))
+    price = db.Column('Price', db.Numeric)
+    days = db.Column("DaysOfStay", db.Integer)
+    intenerary = db.Column("Intenerary", db.String(1000))
+    inclusions = db.Column("Inclusions", db.String(1000))
+    remainingSlots = db.Column("RemainingSlots", db.Integer)
+    expirationDate = db.Column("ExpirationDate", db.Date)
+    hotel = db.Column('HotelsFk', db.Integer, db.ForeignKey('Hotels.Id'))
+    flight = db.Column('FlightFk', db.Integer, db.ForeignKey('Tickets.Id'))
+
+    __tablename__ = 'Packages'
+
+
+class HotelBooking(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    referenceNumber = db.Column("ReferenceNumber", db.String(50))
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('Customers.Id'))
+    hotel = db.Column('HotelsFk', db.Integer, db.ForeignKey('Hotels.Id'))
+    isPaid = db.Column('IsPaid', db.Boolean, default=False)
+
+    __tablename__ = 'HotelBooking'
+
+
+class FlightBooking(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    referenceNumber = db.Column("ReferenceNumber", db.String(50))
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('Customers.Id'))
+    flight = db.Column('FlightFk', db.Integer, db.ForeignKey('Tickets.Id'))
+    isPaid = db.Column('IsPaid', db.Boolean, default=False)
+
+    __tablename__ = 'TicketBooking'
+
+
+class StripeCustomer(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    email = db.Column("Email", db.String(50))
+    stripeCustomerId = ("StripeCustomerId", db.String(50))
+
+    __tablename__ = 'StripeCustomers'
+
+
+class Payments(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    paymentReference = db.Column("PaymentReference", db.String(50))
+    bookingReference = db.Column("BookingReference", db.String(50))
+    paymentFor = db.Column("PaymentFor", db.String(50))
+    stripeCustomer = db.Column("StripeCustomer",
+                               db.ForeignKey('StripeCustomers.Id'))
+    stripeChargeId = db.Column("StripChargeId", db.String(50))
+
+    __tablename__ = "Payments"

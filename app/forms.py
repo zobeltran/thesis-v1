@@ -1,9 +1,10 @@
-from flask_wtf import FlaskForm, CSRFProtect
+from flask_wtf import FlaskForm, CSRFProtect, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms import IntegerField, TextAreaField, FormField, FieldList
+from wtforms import DecimalField
 from wtforms.fields.html5 import DateField, TimeField
 from wtforms.validators import InputRequired, Length, EqualTo, Email
-from wtforms.validators import NumberRange, ValidationError
+from wtforms.validators import NumberRange, ValidationError, Optional
 from datetime import date
 
 csrf = CSRFProtect()
@@ -27,6 +28,10 @@ roomDetailsLength = ('Room Details has maximum of 300 characters')
 # Inquire Hotel Validations
 numberGuest = ('Number of Guest must be at least 1')
 budget = ('Budget must be at lease 500 pesos')
+# Register Package Validations
+destinationLength = ('Destination has a maximum of 50 characters.')
+# Fight Counter
+customerCount = ('Customer Count must not be lower than 1')
 
 
 def DateCheck(form, field):
@@ -74,9 +79,12 @@ class RegisterForm(FlaskForm):
                        choices=[('RO', 'Reservation Officer'),
                                 ('FO', 'Financial Officer'),
                                 ('AD', 'Admin')])
+    recaptcha = RecaptchaField()
 
 
 class RegisterTicket(FlaskForm):
+    flightNo = StringField('Flight Number',
+                           [InputRequired('Flight Number is Required')])
     origin = StringField('Origin',
                          [InputRequired('Origin is Required'),
                           Length(max=50, message=originLength)])
@@ -91,9 +99,13 @@ class RegisterTicket(FlaskForm):
                             [InputRequired('Arrival Date is Required')])
     arrivalTime = TimeField('Arrival Time',
                             [InputRequired('Arrival Time is Required')])
+    returnDate = DateField('Return Date',
+                           [InputRequired('Return Date is Required')])
+    returnTime = TimeField('Return Time',
+                           [InputRequired('Return Time is Required')])
     slots = IntegerField('Slots',
                          [InputRequired('Slots are Required')])
-    price = IntegerField('Price',
+    price = DecimalField('Price',
                          [InputRequired('Price is Required')])
     isPackaged = BooleanField('Packaged')
 
@@ -116,7 +128,7 @@ class RegisterHotel(FlaskForm):
                          [InputRequired('Check Out Date is Required')])
     expirationDate = DateField('Expiration Date',
                                [InputRequired('Expiration Date is Required')])
-    price = IntegerField('Price',
+    price = DecimalField('Price',
                          [InputRequired('Price is Required')])
     isPackaged = BooleanField('Packaged')
 
@@ -138,6 +150,25 @@ class RegisterCustomerFlightsFields(FlaskForm):
 
 class RegisterCustomerFlights(FlaskForm):
     customer = FieldList(FormField(RegisterCustomerFlightsFields))
+
+
+class RegisterCustomerHotelsFields(FlaskForm):
+    firstName = StringField('First Name',
+                            [InputRequired('First Name is Required'),
+                             Length(max=100, message=firstNameLength)])
+    lastName = StringField('Last Name',
+                           [InputRequired('Last Name is Required'),
+                            Length(max=100, message=lastNameLength)])
+    email = StringField('Email',
+                        [InputRequired('Email is Required'),
+                         Email('Not a valid Email')])
+    contactNo = IntegerField('Contact Number',
+                             [InputRequired('Contact Number is Required'),
+                              Length(min=7, message=contactnoLength)])
+
+
+class RegisterCustomerHotels(FlaskForm):
+    customer = FieldList(FormField(RegisterCustomerHotelsFields))
 
 
 class InquiryFlights(FlaskForm):
@@ -203,3 +234,30 @@ class InquiryHotels(FlaskForm):
                          [InputRequired('Check-out Date is Required'),
                           DateCheck])
     note = TextAreaField('Note')
+
+
+class RegisterPackage(FlaskForm):
+    destination = StringField('Destination',
+                              [InputRequired('Input Destination'),
+                               Length(max=50, message='destinationLength')])
+    price = DecimalField('Price',
+                         [InputRequired('Price is Required')])
+    days = IntegerField('Days of Stay',
+                        [InputRequired('Days of Stay Required')])
+    intenerary = TextAreaField('Intenerary',
+                               [InputRequired('Intenerary is Required')])
+    inclusions = TextAreaField('Inclusions',
+                               [InputRequired('Inclusions is Required')])
+    remainingSlots = IntegerField('Remaining Slots',
+                                  [InputRequired('Slots is Required')])
+    expirationDate = DateField('Expiration Date',
+                               [InputRequired('Expiration Date is Required')])
+    hotels = SelectField('Hotels', coerce=int)
+    tickets = SelectField('Flights', coerce=int)
+
+
+class CustomerCount(FlaskForm):
+    customerCounter = IntegerField('Customer Count',
+                                   [InputRequired('Customer Count is Needed'),
+                                    NumberRange(min=1,
+                                                message=customerCount)])

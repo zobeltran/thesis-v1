@@ -9,7 +9,9 @@
     {% else %}
         {{ url_for('main.LogIn') }}
     {% endif %}
-    " class="navbar-brand">First Choice</a>
+    " class="navbar-brand">
+    <img class="img-fluid photoLogo" src="https://preview.ibb.co/ksH4rd/oie_transparent.png" alt="oie_transparent" border="0">
+    </a>
     <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -17,17 +19,22 @@
         {% if current_user.is_authenticated  %}
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a href="" class="nav-link">Packages</a>
+                <a href="{{ url_for('main.CreatePackage') }}" class="nav-link">Packages</a>
             </li>
             <li class="navbar-item">
-                <a href="{{ url_for('main.CreateTicket')}}" class="nav-link">Flights</a>
+                <a href="{{ url_for('main.CreateTicket') }}" class="nav-link">Flights</a>
             </li>
             <li class="navbar-item">
-                <a href="" class="nav-link">Hotels</a>
+                <a href="{{ url_for('main.CreateHotel') }}" class="nav-link">Hotels</a>
             </li>
             <li class="navbar-item">
                 <a href="" class="nav-link">Inquiries</a>
             </li>
+            {% if current_user.role == 'AD'  %}
+            <li class="navbar-item">
+                <a href="{{ url_for('main.LogTrails')}}" class="nav-link">Log Trails</a>
+            </li>
+            {% endif %}
         </ul>
         {% endif %}
         {% if current_user.is_authenticated  %}

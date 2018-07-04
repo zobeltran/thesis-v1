@@ -5,6 +5,7 @@
 {% block navbar %}
     {% include 'partials/navbars/_navbarCustomer.html' %}
 {% endblock %}
+{% block content %}
 <div class="container">
     <br>
     {% for items in viewHotels|batch(3) %}
@@ -17,10 +18,10 @@
                     <p class="card-text">Room Type: {{ hotel.capacity }}</p>
                     <p class="card-text">Details: {{ hotel.details }}</p>
                     <p class="card-text">Room Type: {{ hotel.roomType }}</p>
-                    <p class="card-text">Check-In Date: {{hotel.checkIn}}</p>
-                    <p class="card-text">Check-Out Date: {{hotel.checkOut}}</p>
-                    <p class="card-text">Price: Php {{ flight.price }} </p> 
-                    <a href="{{url_for('main.FlightSummary', id=flight.id)}}" class="btn btn-primary">View Flight</a>
+                    <p class="card-text">Check-In Date: {{hotel.checkIn.strftime('%B %d, %Y') }}</p>
+                    <p class="card-text">Check-Out Date: {{hotel.checkOut.strftime('%B %d, %Y') }}</p>
+                    <p class="card-text">Price: Php {{ '%0.2f'| format(hotel.price|float) }} </p> 
+                    <a href="{{url_for('main.HotelSummary', id=hotel.id)}}" class="btn btn-primary">View Hotel</a>
                 </div>
                 <div class="card-footer">
                     <p class="card-text text-muted text-right">Valid Until: {{ hotel.expirationDate.strftime('%B %d, %Y') }}</p>   
@@ -31,5 +32,4 @@
         <br>
     {% endfor %}
 </div>
-    
 {% endblock %}

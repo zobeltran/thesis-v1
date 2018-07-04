@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from "formhelper.html" import render_field, render_checkbox %}
+
+{% block title %}Add Package{% endblock %}
+{% block navbar %}
+    {% include 'partials/navbars/_navbarEmployee.html' %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <form action="{{ url_for('main.CreatePackage') }}" method="post" novalidate>
+        {{ form.csrf_token() }}
+            <div class="row">
+            <div class="col">{{ render_field(form.destination) }}</div>
+            <div class="col">{{ render_field(form.days) }}</div>
+            <div class="col">{{ render_field(form.price) }}</div>
+            <div class="col">{{ render_field(form.remainingSlots) }}</div>
+            {{ render_field(form.expirationDate) }}
+        </div>
+        <div class="row">
+            <div class="col">{{ render_field(form.intenerary) }}</div>
+        </div>
+        <div class="row">
+            <div class="col">{{ render_field(form.inclusions) }}</div>
+        </div>
+        <div class="row">
+            <div class="col">{{ render_field(form.hotels) }}</div>
+            <div class="col">{{ render_field(form.tickets) }}</div>
+        </div>
+        <input type="submit" value="Add Package" class="btn btn-primary">
+    </form>
+</div>
+{% endblock %}

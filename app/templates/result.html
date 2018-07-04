@@ -4,16 +4,22 @@
     {% include 'partials/navbars/_navbarEmployee.html' %}
 {% endblock %}
 
-{% block content %}
-<h1>{{ current_user.firstName }} {{ current_user.lastName }}</h1>
-<h2>{{ current_user.password }}</h2>
-<h2>{{ current_user.email }}</h2>
-<h2>{% if current_user.role == "AD" %} 
-    Admin 
-    {% elif current_user.role == "RO" %} 
-    Reservation Officer 
-    {% else %} 
-    Financial Officer
-    {% endif %}
-    {{current_user.id}}</h2>
+{% block jumbotron %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h4 class="display-4">Welcome {{ current_user.firstName }} {{ current_user.lastName }}</h4>
+        <hr class="my-4">
+        <p class="lead">
+            {% if current_user.role == "AD" %} 
+                As an Administrator, you are able to do what a 
+                Reservation Officer and Financial Officer can do in addition; 
+                an access to the Trail Logs of this application
+            {% elif current_user.role == "RO" %} 
+                As a Reservation Officer, you are assigned to Handle Reservations and Bookings
+            {% else %} 
+                As a Financial Officer, you are assigned to Track Down Glow of Money
+            {% endif %}
+        </p>
+    </div>
+</div>
 {% endblock %}
