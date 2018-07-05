@@ -26,12 +26,11 @@
                     {{ current_user.firstName }} {{ current_user.lastName }}
                 </a>
                 <li class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a href="" class="dropdown-item">Edit Details</a>
                     <a href="{% if current_user.is_authenticated  %}
                             {% if current_user.role == 'RO' or 'AD' %}
                                 {{ url_for('main.UserHomeRO') }}
                             {% else %}
-                                {{ url_for('main.Register') }}
+                                {{ url_for('main.UserHomeFO') }}
                             {% endif %}
                             {% else %}
                                 {{ url_for('main.LogIn') }}
