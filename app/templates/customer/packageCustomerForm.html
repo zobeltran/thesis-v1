@@ -33,3 +33,8 @@
     </form>
 </div>
 {% endblock %}
+{% block javascript %}
+<script>
+    $( "input[type=text]" ).attr("pattern", '.{5,100}').attr('title','5 minimum characters').prop('required', true)
+</script>
+{% endblock %}

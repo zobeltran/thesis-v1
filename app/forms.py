@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm, CSRFProtect, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms import IntegerField, TextAreaField, FormField, FieldList
 from wtforms import DecimalField
-from wtforms.fields.html5 import DateField, TimeField
+from wtforms.fields.html5 import DateField, TimeField, EmailField
 from wtforms.validators import InputRequired, Length, EqualTo, Email
 from wtforms.validators import NumberRange, ValidationError, Optional
 from datetime import date
@@ -113,7 +113,7 @@ class RegisterTicket(FlaskForm):
     slots = IntegerField('Slots',
                          [InputRequired('Slots are Required')])
     price = DecimalField('Price',
-                         [Optional(), InputRequired('Price is Required')],
+                         [InputRequired('Price is Required')],
                          default=0)
     isPackaged = BooleanField('Packaged')
 
@@ -155,9 +155,8 @@ class RegisterCustomerFlightsFields(FlaskForm):
     lastName = StringField('Last Name',
                            [InputRequired('Last Name is Required'),
                             Length(max=100, message=lastNameLength)])
-    email = StringField('Email',
-                        [InputRequired('Email is Required'),
-                         Email('Not a valid Email')])
+    email = EmailField('Email',
+                       [InputRequired('Email is Required')])
     contactNo = IntegerField('Contact Number',
                              [InputRequired('Contact Number is Required')])
 
@@ -173,9 +172,8 @@ class RegisterCustomerHotelsFields(FlaskForm):
     lastName = StringField('Last Name',
                            [InputRequired('Last Name is Required'),
                             Length(max=100, message=lastNameLength)])
-    email = StringField('Email',
-                        [InputRequired('Email is Required'),
-                         Email('Not a valid Email')])
+    email = EmailField('Email',
+                       [InputRequired('Email is Required')])
     contactNo = IntegerField('Contact Number',
                              [InputRequired('Contact Number is Required')])
 

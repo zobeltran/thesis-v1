@@ -569,7 +569,8 @@ def ViewFlights():
      .update({Ticket.isExpired: True}))
     db.session.commit()
     viewFlights = (Ticket.query.filter(Ticket.isExpired.is_(False))
-                   .filter(Ticket.remainingSlots > 0).all())
+                   .filter(Ticket.remainingSlots > 0)
+                   .filter(Ticket.isPackaged.is_(False)).all())
     return render_template('customer/viewFlights.html',
                            viewFlights=viewFlights)
 
@@ -580,7 +581,8 @@ def ViewHotels():
     (Hotel.query.filter(Hotel.expirationDate <= now)
      .update({Hotel.isExpired: True}))
     viewHotels = (Hotel.query.filter(Hotel.isExpired.is_(False))
-                  .filter(Hotel.remainingRooms > 0).all())
+                  .filter(Hotel.remainingRooms > 0)
+                  .filter(Hotel.isPackaged.is_(False)).all())
     return render_template('customer/viewHotels.html', viewHotels=viewHotels)
 
 
