@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% from 'formhelper.html' import render_field %}
 
-{% block title %} Flight Review {% endblock %}
+{% block title %} Hotel Review {% endblock %}
 
 {% block navbar %}
     {% include 'partials/navbars/_navbarCustomer.html' %}
@@ -14,22 +14,26 @@
                 Booking Reference Number: {{ referenceNumber }}
             </h4>
             <div class="row">
-                <p class="lead col">Flight No: {{flight.flightNo}}</p>
-                <p class="lead col">Number of Tickets booked: {{ counter }}</p>
+                <p class="lead col">Name: {{hotel.name}}</p>
+                <p class="lead col">Number of Rooms booked: {{ counter }}</p>
             </div>
             <div class="row">
-                <div class="lead col">Price: Php {{ flight.price * counter }}</div>
-                <div class="lead col"></div>
+                <div class="lead col">Price: Php {{ '%0.2f'| format(hotel.price * counter|float)  }}</div>
+                <div class="lead col">Room Type: {{ hotel.roomType }}</div>
+            </div>
+            <div class="row">
+                <div class="lead col">check In: {{ hotel.checkIn.strftime('%B %d, %Y') }}</div>
+                <div class="lead col">check Out: {{ hotel.checkOut.strftime('%B %d, %Y') }}</div>
             </div>
             <br>
             <center>
-                <form action="{{ url_for('main.ChargeFlights', counter=counter, id=flight.id, ref=referenceNumber) }}" method="POST">
+                <form action="{{ url_for('main.ChargeHotel', counter=counter, id=hotel.id, ref=referenceNumber) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                         data-key="pk_test_GjK3GmJJ1exs60wIcgTpfggq"
-                        data-name="{{flight.flightNo}} ({{flight.origin}} - {{flight.arrival}})"
-                        data-description="Php {{ flight.price * counter }}"
+                        data-name="{{ hotel.name }} ({{hotel.roomType}})"
+                        data-description="Php {{ hotel.price * counter }}"
                         data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
                         data-locale="auto">
                     </script>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% from 'formhelper.html' import render_field %}
+
+{% block title %} Package Review {% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+{% block jumbotron %}
+    <div class="jumbotron">
+        <div class="container">
+            <h4 class="display-4">Destination {{ packageSummary.destination }}</h4>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col">
+                    <p class="lead">Days of Stay: {{ packageSummary.days }}</p>
+                </div>
+                <div class="col">
+                    <p class="lead">Note:</p>
+                    <p class="lead">{{ packageSummary.Note }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="lead">Price: {{ packageSummary.price }}</div>
+                </div>
+                <div class="col">
+                    <p class="lead">Remaining Slots: {{ packageSummary.remainingSlots }}</p>
+                </div>
+            </div>
+            <p class="lead"></p>
+            <p class="lead"></p>
+            <p class="lead"></p>
+            <form action="{{ url_for('main.PackageSummary', id=packageSummary.id) }}" method="POST" novalidate class="col-5 no-gutters">
+                {{ form.csrf_token }}
+                {{ render_field(form.packageCount) }}
+                <input type="submit" value="Avail Package" class="btn btn-primary">                    
+            </form>
+        </div>
+    </div>
+{% endblock %}

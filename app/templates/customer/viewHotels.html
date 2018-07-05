@@ -5,9 +5,18 @@
 {% block navbar %}
     {% include 'partials/navbars/_navbarCustomer.html' %}
 {% endblock %}
+
+{% block jumbotron %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h4 class="display-4">Hotels</h4>
+            <p class="lead">Select your desired Hotel Booking</p>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-    <br>
     {% for items in viewHotels|batch(3) %}
         <div class="card-deck">
             {% for hotel in items %}

@@ -30,8 +30,12 @@ numberGuest = ('Number of Guest must be at least 1')
 budget = ('Budget must be at lease 500 pesos')
 # Register Package Validations
 destinationLength = ('Destination has a maximum of 50 characters.')
+# Package Counter
+numberOfPackage = ('Number of Package to Avail must not be lower than 1')
 # Fight Counter
 customerCount = ('Customer Count must not be lower than 1')
+# Hotel Counter
+NumberOfRooms = ('Room Count must not be lower than 1')
 
 
 def DateCheck(form, field):
@@ -92,21 +96,25 @@ class RegisterTicket(FlaskForm):
                           [InputRequired('Arrival is Required'),
                            Length(max=50, message=arrivalLength)])
     departureDate = DateField('Departure Date',
-                              [InputRequired('Departure Date is Required')])
+                              [InputRequired('Departure Date is Required'),
+                               DateCheck])
     departureTime = TimeField('Departure Time',
                               [InputRequired('Departure Time is Required')])
     arrivalDate = DateField('Arrival Date',
-                            [InputRequired('Arrival Date is Required')])
+                            [InputRequired('Arrival Date is Required'),
+                             DateCheck])
     arrivalTime = TimeField('Arrival Time',
                             [InputRequired('Arrival Time is Required')])
     returnDate = DateField('Return Date',
-                           [InputRequired('Return Date is Required')])
+                           [InputRequired('Return Date is Required'),
+                            DateCheck])
     returnTime = TimeField('Return Time',
                            [InputRequired('Return Time is Required')])
     slots = IntegerField('Slots',
                          [InputRequired('Slots are Required')])
     price = DecimalField('Price',
-                         [InputRequired('Price is Required')])
+                         [Optional(), InputRequired('Price is Required')],
+                         default=0)
     isPackaged = BooleanField('Packaged')
 
 
@@ -123,13 +131,20 @@ class RegisterHotel(FlaskForm):
                             [InputRequired('Room Details is Required'),
                              Length(max=300, message=roomDetailsLength)])
     checkIn = DateField('Check In Date',
-                        [InputRequired('CheckIn Date is Required')])
+                        [InputRequired('CheckIn Date is Required'),
+                         DateCheck])
     checkOut = DateField('Check Out Date',
-                         [InputRequired('Check Out Date is Required')])
+                         [InputRequired('Check Out Date is Required'),
+                          DateCheck])
     expirationDate = DateField('Expiration Date',
-                               [InputRequired('Expiration Date is Required')])
+                               [InputRequired('Expiration Date is Required'),
+                                DateCheck])
     price = DecimalField('Price',
                          [InputRequired('Price is Required')])
+    rooms = IntegerField('Number of Rooms',
+                         [InputRequired('Number of Rooms is Needed'),
+                          NumberRange(min=1,
+                                      message=NumberOfRooms)])
     isPackaged = BooleanField('Packaged')
 
 
@@ -144,8 +159,7 @@ class RegisterCustomerFlightsFields(FlaskForm):
                         [InputRequired('Email is Required'),
                          Email('Not a valid Email')])
     contactNo = IntegerField('Contact Number',
-                             [InputRequired('Contact Number is Required'),
-                              Length(min=7, message=contactnoLength)])
+                             [InputRequired('Contact Number is Required')])
 
 
 class RegisterCustomerFlights(FlaskForm):
@@ -163,8 +177,7 @@ class RegisterCustomerHotelsFields(FlaskForm):
                         [InputRequired('Email is Required'),
                          Email('Not a valid Email')])
     contactNo = IntegerField('Contact Number',
-                             [InputRequired('Contact Number is Required'),
-                              Length(min=7, message=contactnoLength)])
+                             [InputRequired('Contact Number is Required')])
 
 
 class RegisterCustomerHotels(FlaskForm):
@@ -188,9 +201,11 @@ class InquiryFlights(FlaskForm):
                           [InputRequired('Arrival Location is Required'),
                            Length(max=100, message=arrivalLength)])
     departureDate = DateField('Departure Date',
-                              [InputRequired('Departure Date is Required')])
+                              [InputRequired('Departure Date is Required'),
+                               DateCheck])
     arrivalDate = DateField('Arrival Date',
-                            [InputRequired('Arrival Date is Required')])
+                            [InputRequired('Arrival Date is Required'),
+                             DateCheck])
     time = SelectField('Desired Time',
                        choices=[('AM', 'AM'),
                                 ('PM', 'PM')])
@@ -251,9 +266,24 @@ class RegisterPackage(FlaskForm):
     remainingSlots = IntegerField('Remaining Slots',
                                   [InputRequired('Slots is Required')])
     expirationDate = DateField('Expiration Date',
-                               [InputRequired('Expiration Date is Required')])
+                               [InputRequired('Expiration Date is Required'),
+                                DateCheck])
     hotels = SelectField('Hotels', coerce=int)
     tickets = SelectField('Flights', coerce=int)
+
+
+class PackageCount(FlaskForm):
+    packageCount = IntegerField('Number of Package to Avail',
+                                [InputRequired('Number of Package '
+                                               'to Avail is Needed'),
+                                 NumberRange(min=1, message=numberOfPackage)])
+
+
+class RoomCount(FlaskForm):
+    rooms = IntegerField('Number of Rooms',
+                         [InputRequired('Number of Rooms is Needed'),
+                          NumberRange(min=1,
+                                      message=NumberOfRooms)])
 
 
 class CustomerCount(FlaskForm):

@@ -9,7 +9,7 @@
 <div class="container">
     <br>
     <h4 class="display-4">Customer Forms</h4>
-    <form action="{{ url_for('main.BookCustomerFlights', counter=counter) }}" method="post">
+    <form action="{{ url_for('main.BookCustomerPackages', counter=counter) }}" method="post">
         {% for forms in form.customer  %}
             {{ forms.csrf_token }}
             <div class="row">

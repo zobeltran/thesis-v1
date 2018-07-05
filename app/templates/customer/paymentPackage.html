@@ -14,22 +14,26 @@
                 Booking Reference Number: {{ referenceNumber }}
             </h4>
             <div class="row">
-                <p class="lead col">Flight No: {{flight.flightNo}}</p>
-                <p class="lead col">Number of Tickets booked: {{ counter }}</p>
+                <p class="lead col">Hotel: {{ package.Hotels }}</p>
+                <p class="lead col">Flight: {{ package.Tickets }}</p>
             </div>
             <div class="row">
-                <div class="lead col">Price: Php {{ flight.price * counter }}</div>
+                <p class="lead col">Package: {{package.destination}}</p>
+                <p class="lead col">Number of Packages booked: {{ counter }}</p>
+            </div>
+            <div class="row">
+                <div class="lead col">Price: Php {{ package.price * counter }}</div>
                 <div class="lead col"></div>
             </div>
             <br>
             <center>
-                <form action="{{ url_for('main.ChargeFlights', counter=counter, id=flight.id, ref=referenceNumber) }}" method="POST">
+                <form action="{{ url_for('main.ChargePackage', counter=counter, id=package.id, ref=referenceNumber) }}" method="POST">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <script
                         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                         data-key="pk_test_GjK3GmJJ1exs60wIcgTpfggq"
-                        data-name="{{flight.flightNo}} ({{flight.origin}} - {{flight.arrival}})"
-                        data-description="Php {{ flight.price * counter }}"
+                        data-name="{{package.destination}}"
+                        data-description="Php {{ package.price * counter }}"
                         data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
                         data-locale="auto">
                     </script>

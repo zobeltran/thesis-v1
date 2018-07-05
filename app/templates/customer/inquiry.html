@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'formhelper.html' import render_field %}
+
+{% block title %} Flight Review {% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+
+{% block jumbotron %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h4 class="display-4">Welcome to our Inquiry Page</h4>
+            <p class="lead">Below are the choices where you can Inquire your desired trips.</p>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col">
+                    <p class="lead text-center">You can Inquire here for your most wanted trip to your dream country or local paradise</p>
+                    <center>
+                        <a href="{{ url_for('main.InquireFlights') }}" class="btn btn-block btn-warning col-5">Inquire Flight</a>
+                    </center>
+                </div>
+                <div class="col">
+                    <p class="lead text-center">You can Inquire here for your desired Vacation Hotel or just a relaxing Staycation</p>
+                    <center>
+                        <a href="{{ url_for('main.InquireHotels') }}" class="btn btn-block btn-warning col-5">Inquire Hotel</a>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

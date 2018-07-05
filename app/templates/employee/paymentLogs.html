@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Logs{% endblock %}
+{% block navbar %}
+    {% include 'partials/navbars/_navbarEmployee.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <h4 class="display-4">Payments</h4>
+    <br>
+    <div class="pre-scrollable">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Payment Reference</th>
+                    <th>Booking Reference</th>
+                    <th>Payment For</th>
+                    <th>Stripe Charge Id</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in payments %}
+                    <tr>
+                        <td>{{log.paymentReference}}</td>
+                        <td>{{log.bookingReference}}</td>
+                        <td>{{log.paymentFor}}</td>
+                        <td>{{log.stripeChargeId}}</td>
+                    </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <h4 class="display-4">Tickets Paid</h4>
+    <br>
+    <div class="pre-scrollable">
+            <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Reference Number</th>
+                            <th>Customer</th>
+                            <th>Flight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in tickets %}
+                            <tr>
+                                <td>{{log.referenceNumber}}</td>
+                                <td>{{log.Customer}}</td>
+                                <td>{{log.Flight}}</td>
+                            </tr>
+                        {% endfor%}
+                    </tbody>
+                </table>
+    </div>
+    <br>
+    <h4 class="display-4">Hotels Paid</h4>
+    <br>
+    <div class="pre-scrollable">
+            <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Reference Number</th>
+                            <th>Customer</th>
+                            <th>Hotel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in hotels %}
+                            <tr>
+                                <td>{{log.referenceNumber}}</td>
+                                <td>{{log.Customer}}</td>
+                                <td>{{log.Hotel}}</td>
+                            </tr>
+                        {% endfor%}
+                    </tbody>
+                </table>
+    </div>
+    <br>
+    <h4 class="display-4">Packages Paid</h4>
+    <br>
+    <div class="pre-scrollable">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Reference Number</th>
+                    <th>Customer</th>
+                    <th>Flight</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for log in packages %}
+                <tr>
+                    <td>{{log.referenceNumber}}</td>
+                    <td>{{log.Customer}}</td>
+                    <td>{{log.Package}}</td>
+                </tr>
+            {% endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock%}

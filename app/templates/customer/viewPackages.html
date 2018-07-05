@@ -5,23 +5,32 @@
 {% block navbar %}
     {% include 'partials/navbars/_navbarCustomer.html' %}
 {% endblock %}
+
+{% block jumbotron %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h4 class="display-4">Packages</h4>
+            <p class="lead">Select your desired Package</p>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-    <br>
     {% for items in viewPackages|batch(3) %}
         <div class="card-deck">
-            {% for flight in items %}
+            {% for package in items %}
             <div class="card">
                 <h5 class="card-header">Destination: {{ package.destination }}</h5>
                 <div class="card-body">
-                    <p class="card-text">Days of Stay: {{package,days}} </p>
-                    <p class="card-text">Price: Php {{ package.price }} </p> 
-                    <p class="card-text">Interary: {{package.interary}} </p>
-                    <p class="card-text">Interary: {{package.interary}} </p>
+                    <p class="card-text">Days of Stay: {{package.days}} </p>
+                    <p class="card-text">Price: Php {{ '%0.2f'| format(package.price|float) }} </p> 
+                    <p class="card-text">Interary: {{ package.intenerary}} </p>
                     <p class="card-text">Inclusions: {{ package.inclusions }} </p>
-                    <p class="card-text">Flight details: {{package.flight}} </p>
-                    <p class="card-text">Hotel details: {{package.hotel}} </p> 
-                    <a href="{{url_for('main.PackageSummary', id=flight.id)}}" class="btn btn-primary">View Package</a>
+                    <p class="card-text">Note: {{ package.note }} </p>
+                    <p class="card-text">Flight: {{ package.Tickets }} </p>
+                    <p class="card-text">Hotel: {{ package.Hotels }} </p>
+                    <a href="{{ url_for('main.PackageSummary', id=package.id) }}" class="btn btn-primary">View Package</a>
                 </div>
                 <div class="card-footer">
                     <p class="card-text text-muted text-right">Valid Until: {{ package.expirationDate.strftime('%B %d, %Y') }}</p>   

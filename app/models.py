@@ -59,18 +59,23 @@ class Ticket(db.Model):
     returnTime = db.Column("ReturnTime", db.Time)
     remainingSlots = db.Column("RemainingSlots", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
-    price = db.Column('Price', db.Numeric)
+    price = db.Column('Price', db.Integer)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("IsPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())
+    ticketBooking = db.relationship("FlightBooking", backref='Flight',
+                                    lazy=True)
+    packageFlight = db.relationship('Package', backref='Tickets', lazy=True)
 
     __tablename__ = "Tickets"
 
+    __table_args__ = {'extend_existing': True}
+
     def __repr__(self):
-        return '%r : (%r - %r)' % (self.flightNo,
-                                   self.origin,
-                                   self.arrival)
+        return '{} ({} - {})'.format(self.flightNo,
+                                     self.origin,
+                                     self.arrival)
 
 
 # Hotel Model
@@ -82,21 +87,24 @@ class Hotel(db.Model):
     details = db.Column("Details", db.String(300))
     checkIn = db.Column("CheckIn", db.DateTime)
     checkOut = db.Column("CheckOut", db.DateTime)
-    price = db.Column('Price', db.Numeric)
+    price = db.Column('Price', db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
     isExpired = db.Column("IsExpired", db.Boolean, default=False)
     isPackaged = db.Column("isPackaged", db.Boolean, default=False)
     dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now())
     remainingRooms = db.Column('RemainingRooms', db.Integer)
+    hotelBooking = db.relationship("HotelBooking", backref='Hotel',
+                                   lazy=True)
+    packageHotel = db.relationship('Package', backref='Hotels', lazy=True)
 
     __tablename__ = "Hotels"
 
-    def __repr__(self):
-        return '%s' % (self.id)
+    __table_args__ = {'extend_existing': True}
 
-    def __str__(self):
-        return '{} {}'.format(self.name, self.roomType)
+    def __repr__(self):
+        return '{} ({})'.format(self.name,
+                                self.roomType)
 
 
 # Customer Model
@@ -105,9 +113,22 @@ class Customer(db.Model):
     firstName = db.Column("FirstName", db.String(250))
     lastName = db.Column("LastName", db.String(250))
     email = db.Column("Email", db.String(100))
-    contactNo = db.Column("ContactNumber", db.Integer)
+    contactNo = db.Column("Contact", db.String(50))
+    hotelBooking = db.relationship("HotelBooking", backref='Customer',
+                                   lazy=True)
+    flightBooking = db.relationship("FlightBooking", backref='Customer',
+                                    lazy=True)
+    packageBooking = db.relationship("PackageBooking", backref='Customer',
+                                     lazy=True)
 
     __tablename__ = "Customers"
+
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self):
+        return '{} {} ({})'.format(self.firstName,
+                                   self.lastName,
+                                   self.email)
 
 
 class FlightInquiry(db.Model):
@@ -146,16 +167,36 @@ class HotelInquiry(db.Model):
 class Package(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     destination = db.Column("Destination", db.String(50))
-    price = db.Column('Price', db.Numeric)
+    price = db.Column('Price', db.Integer)
     days = db.Column("DaysOfStay", db.Integer)
     intenerary = db.Column("Intenerary", db.String(1000))
     inclusions = db.Column("Inclusions", db.String(1000))
     remainingSlots = db.Column("RemainingSlots", db.Integer)
     expirationDate = db.Column("ExpirationDate", db.Date)
+    note = db.Column("Note", db.String(1000))
     hotel = db.Column('HotelsFk', db.Integer, db.ForeignKey('Hotels.Id'))
     flight = db.Column('FlightFk', db.Integer, db.ForeignKey('Tickets.Id'))
+    isExpired = db.Column('isExpired', db.Boolean, default=False)
+    packageBooking = db.relationship("PackageBooking", backref='Package',
+                                     lazy=True)
 
     __tablename__ = 'Packages'
+
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self):
+        return '{}'.format(self.destination)
+
+
+class PackageBooking(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    referenceNumber = db.Column("ReferenceNumber", db.String(50))
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('Customers.Id'))
+    package = db.Column('PackagesFk', db.Integer, db.ForeignKey('Packages.Id'))
+    isPaid = db.Column('IsPaid', db.Boolean, default=False)
+
+    __tablename__ = 'PackageBooking'
 
 
 class HotelBooking(db.Model):
@@ -183,7 +224,7 @@ class FlightBooking(db.Model):
 class StripeCustomer(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     email = db.Column("Email", db.String(50))
-    stripeCustomerId = ("StripeCustomerId", db.String(50))
+    stripeCustomerId = db.Column("StripeCustomerId", db.String(50))
 
     __tablename__ = 'StripeCustomers'
 

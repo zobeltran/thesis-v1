@@ -7,6 +7,9 @@
 {% endblock %}
 {% block content %}
 <div class="container">
+    <br>
+    <h4 class="display-4">Add Package</h4>
+    <br>
     <form action="{{ url_for('main.CreatePackage') }}" method="post" novalidate>
         {{ form.csrf_token() }}
             <div class="row">

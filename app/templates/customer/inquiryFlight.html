@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
-{% from "formhelper.html" import render_field %}
-{% block title %} Flight Inquiry {% endblock %}
+{% from 'formhelper.html' import render_field %}
+
+{% block title %} Inquire Flights {% endblock %}
+
+{% block navbar %}
+    {% include 'partials/navbars/_navbarCustomer.html' %}
+{% endblock %}
+
 {% block content %}
     <div class="container">
+            <br>
+            <h4 class="display-4">Flight Inquiry</h4>
+            <br>
         <form action="{{ url_for('main.InquireFlights') }}" method="post" novalidate>
             {{ form.csrf_token }}
             <div class="row">

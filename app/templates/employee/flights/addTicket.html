@@ -7,6 +7,9 @@
 {% endblock %}
 {% block content %}
 <div class="container">
+    <br>
+    <h4 class="display-4">Add Ticket</h4>
+    <br>
     <form action="{{ url_for('main.CreateTicket') }}" method="post" novalidate>
         {{ form.csrf_token() }}
         <div class="form-row">
@@ -62,7 +65,7 @@ $(document).ready(function(){
   $('input:checkbox').on('click', function(){
       if($('input:checkbox').is(':checked')){
         $('#disable').prop('disabled', 'disabled');
-        $('#price').val('');
+        $('#price').val('0');
       }
       else{
         $('#fieldset').prop('disabled', false);

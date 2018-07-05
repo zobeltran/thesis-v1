@@ -18,6 +18,7 @@
     <div class="collapse navbar-collapse" id="navbarMenu">
         {% if current_user.is_authenticated  %}
         <ul class="navbar-nav">
+            {% if current_user.role != 'FO' %}
             <li class="nav-item">
                 <a href="{{ url_for('main.CreatePackage') }}" class="nav-link">Packages</a>
             </li>
@@ -28,8 +29,14 @@
                 <a href="{{ url_for('main.CreateHotel') }}" class="nav-link">Hotels</a>
             </li>
             <li class="navbar-item">
-                <a href="" class="nav-link">Inquiries</a>
+                <a href="{{url_for('main.InquiriesLog')}}" class="nav-link">Inquiries</a>
             </li>
+            {% endif %}
+            {% if current_user.role == 'FO' or current_user.role == 'AD' %}
+            <li class="navbar-item">
+                <a href="{{ url_for('main.PaymentLogs')}}" class="nav-link">Payment Logs</a>
+            </li>
+            {% endif %}
             {% if current_user.role == 'AD'  %}
             <li class="navbar-item">
                 <a href="{{ url_for('main.LogTrails')}}" class="nav-link">Log Trails</a>
@@ -43,7 +50,6 @@
                     {{ current_user.firstName }} {{ current_user.lastName }}
                 </a>
                 <li class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a href="" class="dropdown-item">Edit Details</a>
                     <a href="{{ url_for('main.LogOut') }}" class="dropdown-item">Log Out</a>
                 </li>
             </ul>
